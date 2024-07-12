@@ -96,6 +96,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ViewVault\features\ShowCameraViewCmd.cpp" />
     <ClCompile Include="src\ViewVault\features\DeleteCameraCmd.cpp" />
     <ClCompile Include="src\ViewVault\features\DeleteViewCmd.cpp" />
     <ClCompile Include="src\ViewVault\features\NewCameraToViewCmd.cpp" />
@@ -106,6 +107,7 @@
     <ClCompile Include="src\ViewVault\helper\UIFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ViewVault\features\ShowCameraViewCmd.h" />
     <ClInclude Include="src\ViewVault\features\DeleteCameraCmd.h" />
     <ClInclude Include="src\ViewVault\features\DeleteViewCmd.h" />
     <ClInclude Include="src\ViewVault\features\NewCameraToViewCmd.h" />

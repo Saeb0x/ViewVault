@@ -15,6 +15,7 @@ MStatus ViewVault::initPlugin(MObject obj)
 	viewVault.registerCommand("newCameraToView", NewCameraToViewCmd::creator);
 	viewVault.registerCommand("deleteView", DeleteViewCmd::creator);
 	viewVault.registerCommand("deleteCamera", DeleteCameraCmd::creator);
+	viewVault.registerCommand("showCameraView", ShowCameraViewCmd::creator);
 
 	createUI();
 
@@ -31,6 +32,8 @@ MStatus ViewVault::uninitPlugin(MObject obj)
 	viewVault.deregisterCommand("recallView");
 	viewVault.deregisterCommand("newCameraToView");
 	viewVault.deregisterCommand("deleteView");
+	viewVault.deregisterCommand("deleteCamera");
+	viewVault.deregisterCommand("showCameraView");
 
 	deleteUI();
 

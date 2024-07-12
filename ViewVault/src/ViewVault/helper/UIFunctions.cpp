@@ -43,7 +43,7 @@ void createUI() {
     script += "        view_name = selected_items[0]\n";
     script += "        camera_name = cmds.promptDialog(\n";
     script += "            title='Camera Name',\n";
-    script += "            message='Enter a name for the camera:',\n";
+    script += "            message='Enter a name for the camera (use underscores between words for multiple words):',\n";
     script += "            button=['OK', 'Cancel'],\n";
     script += "            defaultButton='OK',\n";
     script += "            cancelButton='Cancel',\n";
@@ -51,11 +51,21 @@ void createUI() {
     script += "        )\n";
     script += "        if camera_name == 'OK':\n";
     script += "            camera_name = cmds.promptDialog(query=True, text=True)\n";
-    script += "            camera_list = cmds.textScrollList('cameraList', query=True, allItems=True)\n";
-    script += "            if camera_list and camera_name in camera_list:\n";
-    script += "                cmds.confirmDialog(title='Duplicate Camera Name', message='Camera with this name already exists.', button='OK')\n";
+    script += "            if camera_name:\n";
+    script += "                if ' ' in camera_name:\n"; // Check if there are spaces in camera_name
+    script += "                    cmds.confirmDialog(title='Invalid Camera Name', message='Please enter a camera name with underscores and alphanumeric characters only, without spaces between words.', button='OK')\n";
+    script += "                    return\n";
+    script += "                if '-' in camera_name or any(c.isalnum() or c == '_' for c in camera_name):\n"; // Check for dashes and other special characters
+    script += "                    if not camera_name.replace('_', '').isalnum():\n";
+    script += "                        cmds.confirmDialog(title='Invalid Camera Name', message='Please enter a camera name with underscores and alphanumeric characters only.', button='OK')\n";
+    script += "                        return\n";
+    script += "                camera_list = cmds.textScrollList('cameraList', query=True, allItems=True)\n";
+    script += "                if camera_list and camera_name in camera_list:\n";
+    script += "                    cmds.confirmDialog(title='Duplicate Camera Name', message='Camera with this name already exists.', button='OK')\n";
+    script += "                else:\n";
+    script += "                    cmds.newCameraToView(view_name, camera_name)\n";
     script += "            else:\n";
-    script += "                cmds.newCameraToView(view_name, camera_name)\n";
+    script += "                cmds.confirmDialog(title='No Camera Name Entered', message='Please enter a name for the camera.', button='OK')\n";
     script += "        else:\n";
     script += "            cmds.confirmDialog(title='No Camera Name Entered', message='Please enter a name for the camera.', button='OK')\n";
     script += "    else:\n";
@@ -80,6 +90,15 @@ void createUI() {
     script += "            cmds.deleteCamera(camera_name)\n";
     script += "    else:\n";
     script += "        cmds.confirmDialog(title='No Camera Selected', message='Please select cameras to delete.', button='OK')\n";
+
+    // To show any camera's view in a pop-up preview window
+    script += "def show_camera_view():\n";
+    script += "    selected_items = cmds.textScrollList('cameraList', query=True, selectItem=True)\n";
+    script += "    if selected_items and len(selected_items) == 1:\n";
+    script += "        camera_name = selected_items[0]\n";
+    script += "        cmds.showCameraView(camera_name)\n";
+    script += "    else:\n";
+    script += "        cmds.confirmDialog(title='Invalid Selection', message='Please select one camera at a time.', button='OK')\n";
 
     // If window exists and delete it
     script += "if cmds.window('ViewVaultWindow', exists=True):\n";
@@ -107,6 +126,7 @@ void createUI() {
     script += "cameraListFrame = cmds.frameLayout('cameraListFrame', label='Cameras', collapse=True, collapsable=True)\n";
     script += "cameraListLayout = cmds.columnLayout()\n";
     script += "cmds.textScrollList('cameraList', parent=cameraListLayout, numberOfRows=8, allowMultiSelection=True, visible=True)\n";
+    script += "cmds.button(label=\"Show Camera's View\", command='show_camera_view()')\n";
     script += "cmds.button(label='Delete Selected Cameras', command='delete_selected_cameras()')\n";
     script += "cmds.setParent('..')\n";
     script += "cmds.setParent('..')\n";

@@ -6,6 +6,7 @@
 #include "../features/NewCameraToViewCmd.h"
 #include "../features/DeleteViewCmd.h"
 #include "../features/DeleteCameraCmd.h"
+#include "../features/ShowCameraViewCmd.h"
 #include "../helper/CaptureStructs.h"
 
 #include <vector>

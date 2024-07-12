@@ -23,7 +23,7 @@ void createUI() {
     script += "            if view_list and view_name in view_list:\n"; // Check if view_name already exists
     script += "                cmds.confirmDialog(title='Duplicate View Name', message='View with this name already exists.', button='OK')\n";
     script += "            else:\n";
-    script += "                cmds.captureViewport(view_name)\n";
+    script += "                cmds.captureView(view_name)\n";
     script += "        else:\n"; // Handle case where view_name is empty
     script += "            cmds.confirmDialog(title='Invalid View Name', message='Please enter a valid view name.', button='OK')\n";
 
@@ -32,7 +32,7 @@ void createUI() {
     script += "    selected_items = cmds.textScrollList('viewList', query=True, selectItem=True)\n";
     script += "    if selected_items:\n";
     script += "        view_name = selected_items[0]\n";
-    script += "        cmds.recallViewport(view_name)\n";
+    script += "        cmds.recallView(view_name)\n";
     script += "    else:\n";
     script += "        cmds.confirmDialog(title='No View Selected', message='Please select a view to recall.', button='OK')\n";
 
@@ -41,11 +41,23 @@ void createUI() {
     script += "    selected_items = cmds.textScrollList('viewList', query=True, selectItem=True)\n";
     script += "    if selected_items:\n";
     script += "        view_name = selected_items[0]\n";
-    script += "        camera_list = cmds.textScrollList('cameraList', query=True, allItems=True)\n";
-    script += "        if camera_list and view_name in camera_list:\n"; // Check if camera with the same name already exists
-    script += "            cmds.confirmDialog(title='Duplicate Camera Name', message='Camera with this name already exists.', button='OK')\n";
+    script += "        camera_name = cmds.promptDialog(\n";
+    script += "            title='Camera Name',\n";
+    script += "            message='Enter a name for the camera:',\n";
+    script += "            button=['OK', 'Cancel'],\n";
+    script += "            defaultButton='OK',\n";
+    script += "            cancelButton='Cancel',\n";
+    script += "            dismissString='Cancel'\n";
+    script += "        )\n";
+    script += "        if camera_name == 'OK':\n";
+    script += "            camera_name = cmds.promptDialog(query=True, text=True)\n";
+    script += "            camera_list = cmds.textScrollList('cameraList', query=True, allItems=True)\n";
+    script += "            if camera_list and camera_name in camera_list:\n";
+    script += "                cmds.confirmDialog(title='Duplicate Camera Name', message='Camera with this name already exists.', button='OK')\n";
+    script += "            else:\n";
+    script += "                cmds.newCameraToView(view_name, camera_name)\n";
     script += "        else:\n";
-    script += "            cmds.newCameraToView(view_name)\n";
+    script += "            cmds.confirmDialog(title='No Camera Name Entered', message='Please enter a name for the camera.', button='OK')\n";
     script += "    else:\n";
     script += "        cmds.confirmDialog(title='No View Selected', message='Please select a view to add an active camera to.', button='OK')\n";
 
@@ -53,7 +65,9 @@ void createUI() {
     script += "def delete_selected_views():\n";
     script += "    selected_items = cmds.textScrollList('viewList', query=True, selectItem=True)\n";
     script += "    if selected_items:\n";
-    script += "        cmds.textScrollList('viewList', edit=True, removeItem=selected_items)\n";
+    script += "        for view_name in selected_items:\n";
+    script += "            cmds.textScrollList('viewList', edit=True, removeItem=view_name)\n";
+    script += "            cmds.deleteView(view_name)\n";;
     script += "    else:\n";
     script += "        cmds.confirmDialog(title='No View Selected', message='Please select views to delete.', button='OK')\n";
 
@@ -61,7 +75,9 @@ void createUI() {
     script += "def delete_selected_cameras():\n";
     script += "    selected_items = cmds.textScrollList('cameraList', query=True, selectItem=True)\n";
     script += "    if selected_items:\n";
-    script += "        cmds.textScrollList('cameraList', edit=True, removeItem=selected_items)\n";
+    script += "        for camera_name in selected_items:\n";
+    script += "            cmds.textScrollList('cameraList', edit=True, removeItem=camera_name)\n";
+    script += "            cmds.deleteCamera(camera_name)\n";
     script += "    else:\n";
     script += "        cmds.confirmDialog(title='No Camera Selected', message='Please select cameras to delete.', button='OK')\n";
 
@@ -83,7 +99,7 @@ void createUI() {
     script += "viewListFrame = cmds.frameLayout('viewListFrame', label='Captured Views', collapse=True, collapsable=True)\n";
     script += "viewListLayout = cmds.columnLayout()\n";
     script += "cmds.textScrollList('viewList', parent=viewListLayout, numberOfRows=8, allowMultiSelection=True, visible=True)\n";
-    script += "cmds.button(label='Delete Selected Views', command='delete_selected_views()')\n";  // Delete views button
+    script += "cmds.button(label='Delete Selected Views', command='delete_selected_views()')\n";
     script += "cmds.setParent('..')\n";
     script += "cmds.setParent('..')\n";
 
@@ -91,7 +107,7 @@ void createUI() {
     script += "cameraListFrame = cmds.frameLayout('cameraListFrame', label='Cameras', collapse=True, collapsable=True)\n";
     script += "cameraListLayout = cmds.columnLayout()\n";
     script += "cmds.textScrollList('cameraList', parent=cameraListLayout, numberOfRows=8, allowMultiSelection=True, visible=True)\n";
-    script += "cmds.button(label='Delete Selected Cameras', command='delete_selected_cameras()')\n";  // Delete cameras button
+    script += "cmds.button(label='Delete Selected Cameras', command='delete_selected_cameras()')\n";
     script += "cmds.setParent('..')\n";
     script += "cmds.setParent('..')\n";
 

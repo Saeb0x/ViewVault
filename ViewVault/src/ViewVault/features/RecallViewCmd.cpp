@@ -6,9 +6,10 @@
 
 #include "../core/ViewVault.h"
 
-MStatus RecallViewCmd::doIt(const MArgList& args) {
+MStatus RecallViewCmd::doIt(const MArgList& args) 
+{
     if (args.length() < 1) {
-        MGlobal::displayError("Usage: recallViewport <name>");
+        MGlobal::displayError("Usage: recallView <name>");
         return MS::kFailure;
     }
 
@@ -17,7 +18,8 @@ MStatus RecallViewCmd::doIt(const MArgList& args) {
     return MS::kSuccess;
 }
 
-void RecallViewCmd::recallViewport(const std::string& viewName) {
+void RecallViewCmd::recallViewport(const std::string& viewName) 
+{
     bool viewFound = false;
 
     // Check if there's any captured view with the specified name

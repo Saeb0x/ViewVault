@@ -10,9 +10,11 @@ MStatus ViewVault::initPlugin(MObject obj)
 {
 	MFnPlugin viewVault(obj, "Saeb K. H. Naser", "1.0", "Any");
 
-	viewVault.registerCommand("captureViewport", CaptureViewCmd::creator);
-	viewVault.registerCommand("recallViewport", RecallViewCmd::creator);
+	viewVault.registerCommand("captureView", CaptureViewCmd::creator);
+	viewVault.registerCommand("recallView", RecallViewCmd::creator);
 	viewVault.registerCommand("newCameraToView", NewCameraToViewCmd::creator);
+	viewVault.registerCommand("deleteView", DeleteViewCmd::creator);
+	viewVault.registerCommand("deleteCamera", DeleteCameraCmd::creator);
 
 	createUI();
 
@@ -25,8 +27,10 @@ MStatus ViewVault::uninitPlugin(MObject obj)
 {
 	MFnPlugin viewVault(obj);
 
-	viewVault.deregisterCommand("captureViewport");
-	viewVault.deregisterCommand("recallViewport");
+	viewVault.deregisterCommand("captureView");
+	viewVault.deregisterCommand("recallView");
+	viewVault.deregisterCommand("newCameraToView");
+	viewVault.deregisterCommand("deleteView");
 
 	deleteUI();
 

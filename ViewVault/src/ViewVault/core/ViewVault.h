@@ -4,6 +4,8 @@
 #include "../features/CaptureViewCmd.h"
 #include "../features/RecallViewCmd.h"
 #include "../features/NewCameraToViewCmd.h"
+#include "../features/DeleteViewCmd.h"
+#include "../features/DeleteCameraCmd.h"
 #include "../helper/CaptureStructs.h"
 
 #include <vector>

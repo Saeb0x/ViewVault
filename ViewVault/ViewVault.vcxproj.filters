@@ -33,6 +33,12 @@
     <ClCompile Include="src\ViewVault\features\NewCameraToViewCmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ViewVault\features\DeleteViewCmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ViewVault\features\DeleteCameraCmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ViewVault\core\ViewVault.h">
@@ -51,6 +57,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ViewVault\features\NewCameraToViewCmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ViewVault\features\DeleteViewCmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ViewVault\features\DeleteCameraCmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

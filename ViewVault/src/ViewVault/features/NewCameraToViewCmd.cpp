@@ -9,20 +9,22 @@
 
 #include "../core/ViewVault.h"
 
-MStatus NewCameraToViewCmd::doIt(const MArgList& args) {
-    // Check if the command was provided with the viewName argument
+MStatus NewCameraToViewCmd::doIt(const MArgList& args) 
+{
+    // Check if the command was provided with the viewName and cameraName argument
     if (args.length() < 1) {
-        MGlobal::displayError("Usage: newCameraToView <viewName>");
+        MGlobal::displayError("Usage: newCameraToView <viewName> <cameraName>");
         return MS::kFailure;
     }
     
-    addCamera(args.asString(0).asChar());
+    addCamera(args.asString(0).asChar(), args.asString(1).asChar());
 
     return MS::kSuccess;
 }
 
-void NewCameraToViewCmd::addCamera(const std::string& viewName) {
-    // Find the captured view with the specified name in ViewVault
+void NewCameraToViewCmd::addCamera(const std::string& viewName, const std::string& cameraName) 
+{
+    // Find the captured view with the specified name in the captured views vector
     CapturedView selectedView;
     bool viewFound = false;
     for (const auto& view : ViewVault::m_CapturedViews) {
@@ -37,6 +39,16 @@ void NewCameraToViewCmd::addCamera(const std::string& viewName) {
     if (!viewFound) {
         MGlobal::displayError(MString("View '") + viewName.c_str() + "' not found in captured views.");
         return;
+    }
+
+    // Check if a camera with the same name already exists in the captured cameras vector
+    for (const auto& camera : ViewVault::m_CapturedCameras) 
+    {
+        if (camera.m_Name == cameraName.c_str()) 
+        {
+            MGlobal::displayError("Camera '" + MString(cameraName.c_str()) + "' already exists.");
+            return;
+        }
     }
 
     // Create a new camera
@@ -82,14 +94,22 @@ void NewCameraToViewCmd::addCamera(const std::string& viewName) {
     // Refresh the active 3D view to reflect changes
     activeView.refresh();
 
-    MString cameraName = (viewName + " Cam").c_str();
+    // Rename the camera node in the outliner to match the passed camera name
+    MFnDependencyNode depNode(cameraObj);
+    depNode.setName(MString(cameraName.c_str()));
 
     // Add the new camera to the camera list in the UI
     MString script = "import maya.cmds as cmds;\n";
-    script += "cmds.textScrollList('cameraList', edit=True, append='" + cameraName + "')\n";
+    script += "cmds.textScrollList('cameraList', edit=True, append='" + MString(cameraName.c_str()) + "')\n";
     script += "cmds.frameLayout('cameraListFrame', edit=True, collapse=False)\n";  // Expand the frame layout
     MGlobal::executePythonCommand(script);
 
     // Display success message
-    MGlobal::displayInfo(MString("Camera '") + viewName.c_str() + "' added to view '" + selectedView.m_Name + "'.");
+    MGlobal::displayInfo(MString("Camera '") + cameraName.c_str() + "' added to view '" + selectedView.m_Name + "'.");
+
+    // Add the new camera to the captured cameras vector if it doesn't already exist
+    CapturedCamera capturedCamera;
+    capturedCamera.m_Name = MString(cameraName.c_str());
+    capturedCamera.m_CameraPath = cameraPath;
+    ViewVault::m_CapturedCameras.push_back(capturedCamera);
 }

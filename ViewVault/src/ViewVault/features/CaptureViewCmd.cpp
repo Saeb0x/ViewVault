@@ -12,13 +12,15 @@ MStatus CaptureViewCmd::doIt(const MArgList& args) {
         MGlobal::displayError("Usage: captureViewport <name>");
         return MS::kFailure;
     }
+
     captureViewport(args.asString(0).asChar());
+
     return MS::kSuccess;
 }
 
 void CaptureViewCmd::captureViewport(const std::string& viewName) {
     CapturedView capturedView;
-    capturedView.m_Name = viewName;
+    capturedView.m_Name = MString(viewName.c_str());
     capturedView.m_View = M3dView::active3dView();
 
     // Get the active camera and its path
@@ -43,6 +45,7 @@ void CaptureViewCmd::captureViewport(const std::string& viewName) {
     // Update UI or perform other actions as needed
     MString script = "import maya.cmds as cmds;\n";
     script += "cmds.textScrollList('viewList', edit=True, append='" + MString(viewName.c_str()) + "')\n";
+    script += "cmds.frameLayout('viewListFrame', edit=True, collapse=False)\n";  // Expand the frame layout
     MGlobal::executePythonCommand(script);
 
     MGlobal::displayInfo("Viewport '" + MString(viewName.c_str()) + "' captured.");

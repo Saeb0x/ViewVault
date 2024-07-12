@@ -11,7 +11,9 @@ MStatus RecallViewCmd::doIt(const MArgList& args) {
         MGlobal::displayError("Usage: recallViewport <name>");
         return MS::kFailure;
     }
+
     recallViewport(args.asString(0).asChar());
+
     return MS::kSuccess;
 }
 
@@ -20,7 +22,7 @@ void RecallViewCmd::recallViewport(const std::string& viewName) {
 
     // Check if there's any captured view with the specified name
     for (const auto& capturedView : ViewVault::m_CapturedViews) {
-        if (capturedView.m_Name == viewName) {
+        if (capturedView.m_Name == viewName.c_str()) {
             // Check if this is the 'perspShape' camera
             MString cameraName = capturedView.m_CameraPath.partialPathName();
             if (cameraName == "perspShape") {

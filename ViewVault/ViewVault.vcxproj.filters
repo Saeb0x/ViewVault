@@ -47,7 +47,7 @@
     <ClInclude Include="src\ViewVault\features\RecallViewCmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ViewVault\helper\ViewStructs.h">
+    <ClInclude Include="src\ViewVault\helper\CaptureStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ViewVault\features\NewCameraToViewCmd.h">

@@ -5,6 +5,7 @@
 #include <maya/MTransformationMatrix.h>
 #include <maya/MGlobal.h>
 #include <maya/MMatrix.h>
+#include <maya/MGlobal.h>
 
 #include "../core/ViewVault.h"
 
@@ -14,15 +15,18 @@ MStatus NewCameraToViewCmd::doIt(const MArgList& args) {
         MGlobal::displayError("Usage: newCameraToView <viewName>");
         return MS::kFailure;
     }
+    
+    addCamera(args.asString(0).asChar());
 
-    // Get the viewName argument from the command arguments
-    MString viewName = args.asString(0);
+    return MS::kSuccess;
+}
 
+void NewCameraToViewCmd::addCamera(const std::string& viewName) {
     // Find the captured view with the specified name in ViewVault
     CapturedView selectedView;
     bool viewFound = false;
     for (const auto& view : ViewVault::m_CapturedViews) {
-        if (view.m_Name == viewName.asChar()) {
+        if (view.m_Name == viewName.c_str()) {
             selectedView = view;
             viewFound = true;
             break;
@@ -31,57 +35,61 @@ MStatus NewCameraToViewCmd::doIt(const MArgList& args) {
 
     // If the view with the specified name is not found, display an error
     if (!viewFound) {
-        MGlobal::displayError("View '" + viewName + "' not found in captured views.");
-        return MS::kFailure;
+        MGlobal::displayError(MString("View '") + viewName.c_str() + "' not found in captured views.");
+        return;
     }
-
-    // Get the active 3D view in Maya
-    M3dView activeView = M3dView::active3dView();
 
     // Create a new camera
     MFnCamera newCamera;
     MObject cameraObj = newCamera.create();
     if (cameraObj.isNull()) {
         MGlobal::displayError("Failed to create a new camera.");
-        return MS::kFailure;
+        return;
     }
 
-    // Set camera attributes from the existing camera (optional, adjust as needed)
-    double focalLength = newCamera.focalLength();
-    double horizontalFilmAperture = newCamera.horizontalFilmAperture();
-    double verticalFilmAperture = newCamera.verticalFilmAperture();
-    double nearClipping = newCamera.nearClippingPlane();
-    double farClipping = newCamera.farClippingPlane();
-
-    // Set new camera attributes (optional, adjust as needed)
-    newCamera.setFocalLength(focalLength);
-    newCamera.setHorizontalFilmAperture(horizontalFilmAperture);
-    newCamera.setVerticalFilmAperture(verticalFilmAperture);
-    newCamera.setNearClippingPlane(nearClipping);
-    newCamera.setFarClippingPlane(farClipping);
-
-    // Set the camera's translation and rotation
+    // Set the camera's translation and rotation to match the stored view
     MFnTransform cameraTransform(cameraObj);
+    MStatus status;
+
     cameraTransform.setTranslation(selectedView.m_Translation, MSpace::kTransform);
+    if (status != MS::kSuccess) {
+        MGlobal::displayError("Failed to set camera translation.");
+        return;
+    }
+
     cameraTransform.setRotation(selectedView.m_Rotation);
+    if (status != MS::kSuccess) {
+        MGlobal::displayError("Failed to set camera rotation.");
+        return;
+    }
 
     // Get the DAG path of the new camera
     MDagPath cameraPath;
-    MStatus status = MFnDagNode(cameraObj).getPath(cameraPath);
-    if (!status) {
+    status = MFnDagNode(cameraObj).getPath(cameraPath);
+    if (status != MS::kSuccess) {
         MGlobal::displayError("Failed to get DAG path for new camera.");
-        return MS::kFailure;
+        return;
     }
 
     // Set the new camera as the active camera in the active 3D view
+    M3dView activeView = M3dView::active3dView();
     status = activeView.setCamera(cameraPath);
-    if (!status) {
+    if (status != MS::kSuccess) {
         MGlobal::displayError("Failed to set new camera as active camera.");
-        return MS::kFailure;
+        return;
     }
 
     // Refresh the active 3D view to reflect changes
     activeView.refresh();
 
-    return MS::kSuccess;
+    MString cameraName = (viewName + " Cam").c_str();
+
+    // Add the new camera to the camera list in the UI
+    MString script = "import maya.cmds as cmds;\n";
+    script += "cmds.textScrollList('cameraList', edit=True, append='" + cameraName + "')\n";
+    script += "cmds.frameLayout('cameraListFrame', edit=True, collapse=False)\n";  // Expand the frame layout
+    MGlobal::executePythonCommand(script);
+
+    // Display success message
+    MGlobal::displayInfo(MString("Camera '") + viewName.c_str() + "' added to view '" + selectedView.m_Name + "'.");
 }

@@ -4,6 +4,7 @@
 #include <maya/MGlobal.h>
 
 std::vector<CapturedView> ViewVault::m_CapturedViews;
+std::vector<CapturedCamera> ViewVault::m_CapturedCameras;
 
 MStatus ViewVault::initPlugin(MObject obj)
 {

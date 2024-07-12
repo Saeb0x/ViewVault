@@ -109,7 +109,7 @@
     <ClInclude Include="src\ViewVault\features\CaptureViewCmd.h" />
     <ClInclude Include="src\ViewVault\core\ViewVault.h" />
     <ClInclude Include="src\ViewVault\helper\UIFunctions.h" />
-    <ClInclude Include="src\ViewVault\helper\ViewStructs.h" />
+    <ClInclude Include="src\ViewVault\helper\CaptureStructs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
